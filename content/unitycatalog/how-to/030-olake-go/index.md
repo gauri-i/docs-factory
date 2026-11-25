@@ -117,8 +117,9 @@ The writer's remaining authentication options are in
 
 ## Select the streams to replicate
 
-Put the source's `config.json` in a local `config/` directory, as its
-connector page describes, then list what the database offers:
+Put the source's connection settings in `config/source.json`, as its connector
+page describes, and the destination above in `config/destination.json`. Then
+list what the database offers:
 
 ```bash
 docker run --pull=always \
