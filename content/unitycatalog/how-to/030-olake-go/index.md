@@ -24,10 +24,10 @@ SQL Server, IBM Db2, MongoDB, Amazon S3, and Apache Kafka.
 - A catalog with managed storage on S3, called `retail` in these examples.
   OLake Go sends no table `location`, so the server owns every table it writes
   and needs somewhere to put it.
-- Two schemas in that catalog, neither of which OLake Go creates: one to hold
-  the replicated tables, called `sales` here, so they land in `retail.sales`,
-  and one called `test_olake`, where OLake Go writes a probe table on every
-  run.
+- Two schemas in that catalog, both of which OLake Go creates if they don't
+  already exist: one to hold the replicated tables, called `sales` here, so
+  they land in `retail.sales`, and one called `test_olake`, where OLake Go
+  writes a probe table on every run.
 - A source OLake Go can reach, with the replication prerequisites its connector
   documents.
 - [OLake Go](https://olake.io/docs/install/docker-cli/), which runs as a
@@ -61,9 +61,8 @@ What each field holds against this server:
 | --- | --- |
 | `catalog_type` | `unity`, OLake Go's type for Unity Catalog. It reaches the server through the Iceberg REST Catalog API. |
 | `catalog_name` | OLake Go's own name for the catalog. Defaults to `olake_iceberg` when empty. It does not have to match the Unity Catalog catalog. |
-| `rest_catalog_url` | The server's Iceberg REST endpoint. The `/iceberg-rest` path in OLake Go's examples is Databricks'. |
+| `rest_catalog_url` | Databricks workspace URL followed by the Unity Catalog Iceberg REST path, e.g. `https://<workspace-url>/api/2.1/unity-catalog/iceberg-rest`. |
 | `iceberg_s3_path` | **The Unity Catalog catalog name**, such as `retail`, not a bucket path. OLake Go sends it as the Iceberg `warehouse`, which the server resolves to a catalog. |
-| `s3_endpoint` | The S3 API that receives the data files. Omit it for Amazon S3; set it for S3-compatible storage, which OLake Go otherwise never reaches. |
 | `aws_region` | The region of the bucket behind the catalog's managed storage. |
 | `aws_access_key`, `aws_secret_key` | Keys OLake Go uses to write data files to [S3](model:s3Spec) itself. Leave them out to fall back to an IAM role or instance profile. |
 | `arrow_writes` | Whether to use the Arrow-based writer. Defaults to `false`. |
