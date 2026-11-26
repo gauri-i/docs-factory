@@ -60,9 +60,9 @@ What each field holds against this server:
 
 | Field | What it holds here |
 | --- | --- |
-| `catalog_type` | `rest`, for the Iceberg REST Catalog API. |
+| `catalog_type` | `unity`, OLake Go's type for Unity Catalog. It reaches the server through the Iceberg REST Catalog API. |
 | `catalog_name` | OLake Go's own name for the catalog. Defaults to `olake_iceberg` when empty. It does not have to match the Unity Catalog catalog. |
-| `rest_catalog_url` | The server's Iceberg REST endpoint, including `/api/2.1/unity-catalog/iceberg`. |
+| `rest_catalog_url` | The server's Iceberg REST endpoint. The `/iceberg-rest` path in OLake Go's examples is Databricks'. |
 | `iceberg_s3_path` | **The Unity Catalog catalog name**, such as `retail`, not a bucket path. OLake Go sends it as the Iceberg `warehouse`, which the server resolves to a catalog. |
 | `s3_endpoint` | The S3 API that receives the data files. Omit it for Amazon S3; set it for S3-compatible storage, which OLake Go otherwise never reaches. |
 | `aws_region` | The region of the bucket behind the catalog's managed storage. |
@@ -119,10 +119,10 @@ docker run --pull=always \
   --destination /mnt/config/destination.json
 ```
 
-OLake Go creates one Iceberg table per selected stream, commits it through the
-REST catalog, and records its position in a `state.json`, so a later run
-resumes rather than reloading. The tables it writes read like any other Iceberg
-table in the catalog, as in
+OLake Go writes each selected stream to its own Iceberg table, commits it
+through the REST catalog, and keeps its read position in a `state.json`, so
+the next run continues from there instead of loading the source again. The
+tables it writes read like any other Iceberg table in the catalog, as in
 [Use Iceberg REST clients with Unity Catalog](../iceberg-rest/index.md).
 
 OLake Go also ships a web UI that holds the same source and destination
