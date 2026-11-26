@@ -63,8 +63,8 @@ What each field holds against this server:
 | `catalog_name` | OLake Go's own name for the catalog. Defaults to `olake_iceberg` when empty. It does not have to match the Unity Catalog catalog. |
 | `rest_catalog_url` | Databricks workspace URL followed by the Unity Catalog Iceberg REST path, e.g. `https://<workspace-url>/api/2.1/unity-catalog/iceberg-rest`. |
 | `iceberg_s3_path` | **The Unity Catalog catalog name**, such as `retail`, not a bucket path. OLake Go sends it as the Iceberg `warehouse`, which the server resolves to a catalog. |
-| `aws_region` | The region of the bucket behind the catalog's managed storage. |
-| `aws_access_key`, `aws_secret_key` | Keys OLake Go uses to write data files to [S3](model:s3Spec) itself. Leave them out to fall back to an IAM role or instance profile. |
+| `rest_auth_type` | One of the four authentication types OLake Go supports for Unity Catalog: `personal access token`, `oauth2 m2m`, `oauth2 u2m`, or `token federation`. |
+| `token` | The credential itself. OLake Go sends it as a bearer token in the `Authorization` header. |
 | `arrow_writes` | Whether to use the Arrow-based writer. Defaults to `false`. |
 
 `iceberg_s3_path` is the field most often filled in wrongly. The server reads
@@ -78,10 +78,11 @@ access to the catalog's storage location directly.
 ## Select the streams to replicate
 
 Put the source's connection settings in a `source.json`, as its connector page
-describes — [PostgreSQL](https://olake.io/docs/connectors/postgres), for
-instance — and the destination above in a `destination.json`, both in one
-folder. OLake Go reads and writes that folder as `/mnt/config`, so mount it by
-its full path. Then list what the source offers:
+describes (for instance,
+[PostgreSQL](https://olake.io/docs/connectors/postgres)) and the destination
+above in a `destination.json`, both in one folder. OLake Go reads and writes
+that folder as `/mnt/config`, so mount it by its full path. Then list what the
+source offers:
 
 ```bash
 docker run --pull=always \
@@ -98,10 +99,6 @@ or `source-kafka`.
 The command writes `available_streams.json`, `selected_streams.json`, and
 `streams.json` into that folder. Reduce `selected_streams.json` to the tables
 you want.
-
-Every stream in `available_streams.json` carries a `destination_database`, the
-schema its table goes to. `discover` fills it from the source's own name for
-the data; set it to the schema you created, `sales`.
 
 ## Run the sync
 
