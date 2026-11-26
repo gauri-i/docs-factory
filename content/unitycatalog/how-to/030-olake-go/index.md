@@ -21,14 +21,13 @@ REST catalog. Its sources are PostgreSQL, MySQL, Oracle, SQL Server, IBM Db2,
 MongoDB, Amazon S3, and Apache Kafka.
 
 :::prerequisites
-- A catalog with managed storage on S3, called `retail` in these examples:
-  [Set managed storage for catalogs and schemas on S3](../managed-storage-s3/index.md).
+- A catalog with managed storage on S3, called `retail` in these examples.
   OLake Go sends no table `location`, so the server owns every table it writes
   and needs somewhere to put it.
 - Two schemas in that catalog, neither of which OLake Go creates: one to hold
   the replicated tables, called `sales` here, so they land in `retail.sales`,
   and one called `test_olake`, where OLake Go writes a probe table on every
-  run: [Manage catalogs and schemas](../manage-catalogs-and-schemas/index.md).
+  run.
 - A source OLake Go can reach, with the replication prerequisites its connector
   documents.
 - [OLake Go](https://olake.io/docs/install/docker-cli/), which runs as a
@@ -75,14 +74,13 @@ isn't one of its catalog names, an `s3://` URL included.
 
 OLake Go writes the Iceberg data files with the keys above rather than the
 short-lived credentials the server vends to readers, so those keys need write
-access to the catalog's storage location directly. For how the server's own
-vending works, and why other engines need no keys, see
-[Credential vending](../../explanation/credential-vending/index.md).
+access to the catalog's storage location directly.
 
 ## Select the streams to replicate
 
 Put the source's connection settings in a `source.json`, as its connector page
-describes, and the destination above in a `destination.json`, both in one
+describes — [PostgreSQL](https://olake.io/docs/connectors/postgres), for
+instance — and the destination above in a `destination.json`, both in one
 folder. OLake Go reads and writes that folder as `/mnt/config`, so mount it by
 its full path. Then list what the source offers:
 
@@ -122,8 +120,7 @@ docker run --pull=always \
 OLake Go writes each selected stream to its own Iceberg table, commits it
 through the REST catalog, and keeps its read position in a `state.json`, so
 the next run continues from there instead of loading the source again. The
-tables it writes read like any other Iceberg table in the catalog, as in
-[Use Iceberg REST clients with Unity Catalog](../iceberg-rest/index.md).
+tables it writes read like any other Iceberg table in the catalog.
 
 OLake Go also ships a web UI that holds the same source and destination
 settings; its
@@ -131,9 +128,7 @@ settings; its
 
 ## Next steps
 
-- [Use Iceberg REST clients with Unity Catalog](../iceberg-rest/index.md) reads
-  the tables OLake Go wrote.
-- [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md)
-  covers what the server does with a table it owns.
-- [Find an integration for your tool](../integrations/index.md) lists the other
-  engines and tools that connect to the server.
+- [OLake Go's Iceberg REST catalog writer](https://olake.io/docs/writers/iceberg/catalog/rest/?rest-catalog=unity)
+  documents every writer setting.
+- [OLake Go's connectors](https://olake.io/docs/connectors/postgres) document
+  each source's own settings and replication prerequisites.
