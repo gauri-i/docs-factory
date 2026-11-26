@@ -18,9 +18,7 @@ and continuing with change data capture. It writes through the
 [Iceberg REST Catalog](model:icebergRestSpec) API, so it needs no Unity
 Catalog-specific connector: its Iceberg writer treats the server as a generic
 REST catalog. Its sources are PostgreSQL, MySQL, Oracle, SQL Server, IBM Db2,
-MongoDB, Amazon S3, and Apache Kafka, and its
-[connector documentation](https://olake.io/docs/connectors/overview/) gives the
-sync modes each one supports.
+MongoDB, Amazon S3, and Apache Kafka.
 
 :::prerequisites
 - A catalog with managed storage on S3, called `retail` in these examples:
@@ -40,30 +38,23 @@ sync modes each one supports.
 ## Write the destination configuration
 
 OLake Go takes its writer settings in a `destination.json`. Set
-`catalog_type` to `rest` and point `rest_catalog_url` at the server's Iceberg
-REST endpoint, `/api/2.1/unity-catalog/iceberg`:
+`catalog_type` to `unity` and point `rest_catalog_url` at the server's Iceberg
+REST endpoint:
 
 ```json
 {
   "type": "ICEBERG",
   "writer": {
-    "catalog_type": "rest",
-    "catalog_name": "unity",
-    "rest_catalog_url": "http://host.docker.internal:8080/api/2.1/unity-catalog/iceberg",
-    "iceberg_s3_path": "retail",
-    "s3_endpoint": "http://host.docker.internal:9000",
-    "aws_region": "us-east-1",
-    "aws_access_key": "<AWS_ACCESS_KEY>",
-    "aws_secret_key": "<AWS_SECRET_KEY>",
+    "catalog_type": "unity",
+    "catalog_name": "olake_iceberg",
+    "rest_catalog_url": "https://<DATABRICK_WORKSPACE_URL>/api/2.1/unity-catalog/iceberg-rest",
+    "iceberg_s3_path": "<CATALOG_NAME>",
+    "rest_auth_type": "personal access token",
+    "token": "<DATABRICK_USER_PERSONAL_ACCESS_TOKEN>",
     "arrow_writes": false
   }
 }
 ```
-
-OLake Go runs inside a container, so both addresses are the host's rather than
-`localhost`. `host.docker.internal` resolves to the host under Docker Desktop;
-on Linux, pass `--add-host=host.docker.internal:host-gateway` to the commands
-below. A server elsewhere takes its own address.
 
 What each field holds against this server:
 
@@ -87,42 +78,6 @@ short-lived credentials the server vends to readers, so those keys need write
 access to the catalog's storage location directly. For how the server's own
 vending works, and why other engines need no keys, see
 [Credential vending](../../explanation/credential-vending/index.md).
-
-## Authenticate to the server
-
-The server recognizes one client credential: a Unity Catalog access token,
-presented as a bearer token. A user obtains one by exchanging an identity
-provider's token at `POST /api/1.0/unity-control/auth/tokens`, and the server
-writes the first token, for `admin`, to `etc/conf/token.txt` the first time it
-starts with authorization enabled. See
-[Principals and users](../../explanation/uc-basics/index.md#principals-and-users).
-
-Carry it in the writer as `token`:
-
-```json
-{
-  "type": "ICEBERG",
-  "writer": {
-    "catalog_type": "rest",
-    "catalog_name": "unity",
-    "rest_catalog_url": "http://host.docker.internal:8080/api/2.1/unity-catalog/iceberg",
-    "iceberg_s3_path": "retail",
-    "s3_endpoint": "http://host.docker.internal:9000",
-    "aws_region": "us-east-1",
-    "aws_access_key": "<AWS_ACCESS_KEY>",
-    "aws_secret_key": "<AWS_SECRET_KEY>",
-    "token": "<UC_ACCESS_TOKEN>"
-  }
-}
-```
-
-A server with authorization disabled, the local one included, accepts every
-request, so omit `token` there.
-
-OLake Go's remaining authentication types belong to other catalogs. The flows
-in [OLake Go's REST catalog reference](https://olake.io/docs/writers/iceberg/catalog/rest/?rest-catalog=unity)
-are Databricks Unity Catalog's, built on personal access tokens that this
-server doesn't issue.
 
 ## Select the streams to replicate
 
