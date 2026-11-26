@@ -14,11 +14,11 @@ status: draft
 [OLake Go](https://olake.io/) replicates an operational database into
 [Apache Iceberg](model:icebergSpec) tables that
 [Unity Catalog](model:unityCatalogServer) governs, starting with a full load
-and continuing with change data capture. It writes through the
-[Iceberg REST Catalog](model:icebergRestSpec) API, so it needs no Unity
-Catalog-specific connector: its Iceberg writer treats the server as a generic
-REST catalog. Its sources are PostgreSQL, MySQL, Oracle, SQL Server, IBM Db2,
-MongoDB, Amazon S3, and Apache Kafka.
+and continuing with change data capture. It has no Unity Catalog connector of
+its own: its Iceberg writer speaks the
+[Iceberg REST Catalog](model:icebergRestSpec) API, and the `unity` setting it
+takes is a preset of that writer. Its sources are PostgreSQL, MySQL, Oracle,
+SQL Server, IBM Db2, MongoDB, Amazon S3, and Apache Kafka.
 
 :::prerequisites
 - A catalog with managed storage on S3, called `retail` in these examples.
