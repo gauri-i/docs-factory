@@ -63,7 +63,7 @@ confirmed, and *archived* means the project no longer ships.
 | Sail | Unity Catalog REST | LakeSail | [Unity Catalog](https://docs.lakesail.com/sail/latest/guide/catalog/unity.html) | Maintained | 2026-10-25 |
 | Ladybug | Unity Catalog REST | LadybugDB | [Unity Catalog extension](https://docs.ladybugdb.com/extensions/attach/unity/) | Maintained | 2026-10-25 |
 | Lance Namespace | Unity Catalog REST | Lance | [Unity Catalog](https://lance.org/format/namespace/supported-catalogs/unity/) | Maintained | 2026-10-25 |
-| OLake Go | Iceberg REST | Datazip | [Iceberg REST catalog writer](https://olake.io/docs/writers/iceberg/catalog/rest/) | Maintained | 2026-11-25 |
+| OLake Go | Iceberg REST | Datazip | [Iceberg REST catalog writer](https://olake.io/docs/writers/iceberg/catalog/rest/?rest-catalog=unity) | Maintained | 2026-11-25 |
 | CelerData | Unity Catalog REST | CelerData | [Earlier Unity Catalog guide](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/docs/integrations/unity-catalog-celerdata.md) | Unverified | 2026-10-25 |
 | Kuzu | Unity Catalog REST | None | [Archived repository](https://github.com/kuzudb/kuzu) | Archived | 2026-10-25 |
 
@@ -94,14 +94,11 @@ Notes on individual rows:
 - **Ladybug** scans and copies Delta tables from one catalog's default schema.
 - **Lance Namespace** stores Lance tables in Unity Catalog as external tables
   with the table property `table_type` set to `lance`.
-- **OLake Go** writes through the Iceberg REST catalog rather than reading, so
-  it replicates a database into new Iceberg tables. It sends no table
-  `location`, so the server creates managed tables and the target catalog or
-  schema needs managed storage:
-  [Set managed storage for catalogs and schemas on S3](../managed-storage-s3/index.md).
-  Its `iceberg_s3_path` is the catalog name, which it sends as the Iceberg
-  `warehouse`, not a bucket path. It writes data files with the AWS keys in its
-  own configuration, not with the credentials the server vends.
+- **OLake Go** is the one tool here that writes through the Iceberg REST
+  catalog rather than reading through it: it replicates a source database into
+  new Iceberg tables, which the server owns and places in the catalog's managed
+  storage. See
+  [Replicate a database into Iceberg tables with OLake Go](../olake-go/index.md).
 - **CelerData**'s documentation site now redirects to a PhoenixData-branded
   site, which documents a `unity` metastore type for its Delta Lake catalog.
   Whether that is the same product, and whether it still connects to an OSS
