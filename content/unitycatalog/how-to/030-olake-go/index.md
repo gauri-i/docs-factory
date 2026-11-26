@@ -97,8 +97,9 @@ Replace `source-postgres` with the image for your source: `source-mysql`,
 or `source-kafka`.
 
 The command writes `available_streams.json`, `selected_streams.json`, and
-`streams.json` into that folder. Reduce `selected_streams.json` to the tables
-you want.
+`streams.json` into that folder. The only file that needs to be updated is
+`selected_streams.json`. Reduce `selected_streams.json` to the tables you want
+to sync.
 
 ## Run the sync
 
